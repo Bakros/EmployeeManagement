@@ -2,12 +2,11 @@ package com.luv2code.springboot.cruddemo.controller;
 
 import com.luv2code.springboot.cruddemo.entity.Employee;
 import com.luv2code.springboot.cruddemo.service.EmployeeService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.Mapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -41,9 +40,43 @@ public class EmployeeController {
 
         model.addAttribute("employee",employee);
 
+       // employee.setFirstName("Seba");
+       // System.out.println(employee);
+
         //System.out.println("All ok");
         //Video 222 2.11 acá voy.
 
+        model.addAttribute("Title","- New Employee");
+
         return "employee/employee-form";
+    }
+
+    @PostMapping("/save")
+    public String saveNewEmployee(@ModelAttribute("employee") Employee theEmployee){
+
+        System.out.println("Id new employee created " + employeeService.save(theEmployee).getId());
+
+
+
+        return "redirect:/employees/list";
+    }
+
+    @GetMapping("/showFormForUpdate")
+    public String showFormForUpdate(@RequestParam("employeeId") int id, Model theModel){
+
+        Employee employee = this.employeeService.findById(id);
+        theModel.addAttribute("employee", employee);
+
+        theModel.addAttribute("Title","- Update an Employee");
+
+        return "employee/employee-form";
+    }
+
+    @GetMapping("/delete")
+    public String deleteEmployee(@RequestParam("employeeId") int id, Model theModel){
+
+        this.employeeService.deleteById(id);
+
+        return "redirect:/employees/list";
     }
 }
